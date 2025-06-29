@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FaSearch, FaChevronDown, FaChevronUp, FaTimes, FaBars } from "react-icons/fa";
+import { FaSearch, FaChevronDown, FaChevronUp, FaTimes, FaBars, FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { RiCoupon2Line } from "react-icons/ri";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -15,7 +15,7 @@ const Navbar = () => {
   const [searchValue, setSearchValue] = useState("");
   const navRef = useRef(null);
 
-  // Data - Updated to match edusparkglobal.com structure
+  // Data - Same as desktop version
   const colleges = [
     "Amity University",
     "NMIMS University", 
@@ -27,12 +27,12 @@ const Navbar = () => {
       college: "UPES Online",
       courses: [
         {
-          name: "Engineering",
-          programs: ["B.Tech", "M.Tech", "Ph.D"]
+          name: "Business",
+          programs: ["MBA", "BBA", "Executive MBA"]
         },
         {
-          name: "Business",
-          programs: ["BBA", "MBA", "Executive MBA"]
+          name: "Technology",
+          programs: ["B.Tech", "M.Tech", "BCA", "MCA"]
         }
       ]
     },
@@ -44,17 +44,8 @@ const Navbar = () => {
           programs: ["B.Sc", "M.Sc", "PhD"]
         },
         {
-          name: "Medicine",
-          programs: ["MBBS", "MD", "MS"]
-        }
-      ]
-    },
-    {
-      college: "NPTC Group of Colleges",
-      courses: [
-        {
-          name: "Vocational",
-          programs: ["Diploma", "Certificate"]
+          name: "Management",
+          programs: ["BBA", "MBA", "PGDM"]
         }
       ]
     }
@@ -392,86 +383,127 @@ const Navbar = () => {
             className="md:hidden bg-white shadow-lg overflow-hidden"
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {/* Mobile Colleges Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsCollegeOpen(!isCollegeOpen)}
-                  className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                >
-                  Colleges
-                  {isCollegeOpen ? (
-                    <FaChevronUp className="ml-1 h-4 w-4" />
-                  ) : (
-                    <FaChevronDown className="ml-1 h-4 w-4" />
-                  )}
-                </button>
-                {isCollegeOpen && (
-                  <div className="pl-4 py-2 space-y-1">
-                    {colleges.map((college) => (
-                      <a
-                        key={college}
-                        href="#"
-                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-gray-50"
-                      >
-                        {college}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {/* Mobile Home Link */}
+              <a
+                href="#"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b border-gray-200"
+              >
+                Home
+              </a>
 
-              {/* Mobile Courses Dropdown */}
+              {/* Mobile About Us Link */}
+              <a
+                href="#"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b border-gray-200"
+              >
+                About Us
+              </a>
+
+              {/* Mobile Courses Dropdown - Multi-level */}
               <div className="relative">
                 <button
-                  onClick={() => setIsCoursesOpen(!isCoursesOpen)}
-                  className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  onClick={() => {
+                    setIsCoursesOpen(!isCoursesOpen);
+                    setActiveCollege(null);
+                    setActiveCourse(null);
+                  }}
+                  className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b border-gray-200"
                 >
                   Courses
                   {isCoursesOpen ? (
-                    <FaChevronUp className="ml-1 h-4 w-4" />
+                    <FaChevronUp className="text-gray-500" />
                   ) : (
-                    <FaChevronDown className="ml-1 h-4 w-4" />
+                    <FaChevronDown className="text-gray-500" />
                   )}
                 </button>
-                {isCoursesOpen && (
-                  <div className="pl-4 py-2 space-y-1">
-                    {courseCategories.map((category) => (
-                      <div key={category.name} className="mb-4">
-                        <h3 className="font-bold">{category.name}</h3>
-                        {category.courses.map((course) => (
-                          <div key={course.name} className="ml-4">
-                            <h4 className="font-medium">{course.name}</h4>
-                            <ul className="ml-4">
-                              {course.programs.map((program) => (
-                                <li key={program}>
-                                  <a href="#">{program}</a>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                )}
+
+                <AnimatePresence>
+                  {isCoursesOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden bg-gray-50"
+                    >
+                      {/* Level 1: Colleges */}
+                      {!activeCollege && courseData.map((college) => (
+                        <div key={college.college} className="border-b border-gray-200 last:border-0">
+                          <button
+                            onClick={() => setActiveCollege(college)}
+                            className="flex items-center justify-between w-full px-5 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100"
+                          >
+                            {college.college}
+                            <FaChevronRight className="text-gray-400" />
+                          </button>
+                        </div>
+                      ))}
+
+                      {/* Level 2: Courses */}
+                      {activeCollege && !activeCourse && (
+                        <div>
+                          <button
+                            onClick={() => setActiveCollege(null)}
+                            className="flex items-center px-4 py-3 text-sm font-medium text-blue-600 hover:bg-gray-100 w-full border-b border-gray-200"
+                          >
+                            <FaChevronLeft className="mr-2" />
+                            Back to Colleges
+                          </button>
+                          {activeCollege.courses.map((course) => (
+                            <div key={course.name} className="border-b border-gray-200 last:border-0">
+                              <button
+                                onClick={() => setActiveCourse(course)}
+                                className="flex items-center justify-between w-full px-5 py-3 text-left text-sm font-medium text-gray-700 hover:bg-gray-100"
+                              >
+                                {course.name}
+                                <FaChevronRight className="text-gray-400" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Level 3: Programs */}
+                      {activeCourse && (
+                        <div>
+                          <button
+                            onClick={() => setActiveCourse(null)}
+                            className="flex items-center px-4 py-3 text-sm font-medium text-blue-600 hover:bg-gray-100 w-full border-b border-gray-200"
+                          >
+                            <FaChevronLeft className="mr-2" />
+                            Back to {activeCollege.college}
+                          </button>
+                          {activeCourse.programs.map((program) => (
+                            <a
+                              key={program}
+                              href="#"
+                              className="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-200 last:border-0"
+                            >
+                              {program}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Other Mobile Links */}
               <a
                 href="#"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b border-gray-200"
               >
                 Compare
               </a>
               <a
                 href="#"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b border-gray-200"
               >
                 Blogs
               </a>
               <a
                 href="#"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b border-gray-200"
               >
                 Contact
               </a>
@@ -480,13 +512,13 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsMoreOpen(!isMoreOpen)}
-                  className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                  className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 border-b border-gray-200"
                 >
                   More
                   {isMoreOpen ? (
-                    <FaChevronUp className="ml-1 h-4 w-4" />
+                    <FaChevronUp className="text-gray-500" />
                   ) : (
-                    <FaChevronDown className="ml-1 h-4 w-4" />
+                    <FaChevronDown className="text-gray-500" />
                   )}
                 </button>
                 {isMoreOpen && (
